@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.IO;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using FluentFTP;
@@ -17,8 +15,6 @@ namespace MessageStaticParseService
         bool todb = false;
         bool csv = false;
         bool rule = false;
-        private ConcurrentQueue<string> queue = new ConcurrentQueue<string>();
-        private Hashtable fileMap = new Hashtable();
         public FtpClient csvFtpClient { get; set; } = new FtpClient("192.168.30.10", "csv", "csv");
 
         public void Start(bool todb, bool csv, bool rule)
@@ -39,36 +35,20 @@ namespace MessageStaticParseService
                 Logs.Error("", ex);
             }
 
-            LoadFiles(staticFolder);
             Task.Run(() => { WorkAsync(staticFolder); });
 
             Logs.Info("启动静态文件监控.");
         }
 
-        private void LoadFiles(string staticFolder)
-        {
-            string[] file = Directory.GetFiles(staticFolder);
-            for (int i = 0; i < file.Length; i++)
-            {
-                lock (fileMap.SyncRoot)
-                {
-                    if (!fileMap.ContainsValue(file[i]))
-                    {
-                        fileMap.Add(Path.GetFileName(file[i]), file[i]);
-                        queue.Enqueue(file[i]);
-                    }
-                }
-            }
-        }
 
         private void WorkAsync(string staticFolder)
         {
             while (true)
             {
-                string file = "";
-                try
+                string[] files = Directory.GetFiles(staticFolder);
+                foreach (var file in files)
                 {
-                    if (queue.TryDequeue(out file))
+                    try
                     {
                         if (Path.GetExtension(file).ToUpper() == ".ZIP")
                         {
@@ -80,9 +60,6 @@ namespace MessageStaticParseService
                             a.Read(file, ZipHelper.DeCompressFile(file));
                             deleteFile(file);
                         }
-                        else if (Path.GetExtension(file).ToUpper() == ".CSV")
-                        {
-                        }
                         else
                         {
                             var a = new StaticReader();
@@ -90,54 +67,46 @@ namespace MessageStaticParseService
                             a.CreateCsv = this.csv;
                             a.RuleTest = this.rule;
                             a.OnReportProgress += A_OnReportProgress;
-                            int stdfid= a.Read(file);
+                            int stdfid = a.Read(file);
 
                             deleteFile(file);
-                            
+
                             if (!this.csv) continue;
 
-                            string data = DateTime.Now.ToString("yyyyMMdd");
-
-                            FileInfo[] files = new DirectoryInfo(Config.CsvFileForlder).GetFiles(Path.GetFileNameWithoutExtension(file) + "*",
-                                SearchOption.AllDirectories);
-                            if (files.Length > 0)
+                            Task.Run(() =>
                             {
-                                string disk = @"D:\jieyun\csv\ZIP";
-                                csvFtpClient.UploadFile(files[0].FullName, $"CSV/ZIP/{data}/{files[0].Name}", FtpRemoteExists.Overwrite, true);
-                                Logs.Info("上传csv文件");
+                                string data = DateTime.Now.ToString("yyyyMMdd");
 
-                                DatabaseManager db = new DatabaseManager();
-                                string lotid = db.ExecuteScalar("select lotid from mir where stdfid=:stdfid", new {stdfid}).ToString();
+                                FileInfo[] csvs = new DirectoryInfo(Config.CsvFileForlder).GetFiles(Path.GetFileNameWithoutExtension(file) + "*",
+                                    SearchOption.AllDirectories);
+                                if (files.Length > 0)
+                                {
+                                    string disk = @"D:\jieyun\csv\ZIP";
+                                    csvFtpClient.UploadFile(csvs[0].FullName, $"CSV/ZIP/{data}/{csvs[0].Name}", FtpRemoteExists.Overwrite, true);
+                                    Logs.Info("上传csv文件");
 
-                                db.ExecuteNonQuery(@"delete csvpath where stdfid=:stdfid", new {stdfid});
+                                    DatabaseManager db = new DatabaseManager();
+                                    string lotid = db.ExecuteScalar("select lotid from mir where stdfid=:stdfid", new {stdfid}).ToString();
 
-                                db.ExecuteNonQuery(@"INSERT INTO CSVPATH(STDFID,FILEPATH,LOTID,INPUTDATE)VALUES(:stdfid,:filename,:lotid,sysdate)",
-                                    new {stdfid, filename = Path.Combine(disk, files[0].Name), lotid});
+                                    db.ExecuteNonQuery(@"delete csvpath where stdfid=:stdfid", new {stdfid});
 
-                                files[0].Delete();
-                            }
+                                    db.ExecuteNonQuery(
+                                        @"INSERT INTO CSVPATH(STDFID,FILEPATH,LOTID,INPUTDATE)VALUES(:stdfid,:filename,:lotid,sysdate)",
+                                        new {stdfid, filename = Path.Combine(disk, csvs[0].Name), lotid});
+
+                                    csvs[0].Delete();
+                                }
+                            });
                         }
                     }
-                    else
+                    catch (Exception ex)
                     {
-                        Console.WriteLine("等待文件写入");
-                        LoadFiles(staticFolder);
-                        Thread.Sleep(1000);
+                        Logs.Error("解析异常", ex);
+                        Thread.Sleep(10000);
                     }
                 }
-                catch (Exception ex)
-                {
-                    lock (fileMap.SyncRoot)
-                    {
-                        if (fileMap.ContainsKey(Path.GetFileName(file)))
-                        {
-                            queue.Enqueue(file);
-                        }
-                    }
 
-                    Logs.Error("解析异常", ex);
-                    Thread.Sleep(10000);
-                }
+                Thread.Sleep(1000);
             }
 
             // ReSharper disable once FunctionNeverReturns
@@ -145,18 +114,14 @@ namespace MessageStaticParseService
 
         private void deleteFile(string file)
         {
-            lock (fileMap.SyncRoot)
+            try
             {
-                fileMap.Remove(Path.GetFileName(file));
-                try
-                {
-                    File.Delete(file);
-                    Logs.Info($"释放缓存,删除文件:{Path.GetFileName(file)}");
-                }
-                catch (Exception e)
-                {
-                    Logs.Error(Path.GetFileName(file), e);
-                }
+                File.Delete(file);
+                Logs.Info($"释放缓存,删除文件:{Path.GetFileName(file)}");
+            }
+            catch (Exception e)
+            {
+                Logs.Error(Path.GetFileName(file), e);
             }
         }
 

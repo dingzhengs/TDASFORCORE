@@ -143,9 +143,10 @@ namespace TDASDataParser
                 Console.WriteLine($"完成解析,解析数据{counts}条,用时{sw.ElapsedMilliseconds / 1000}秒,{DateTime.Now.ToString("HH:mm:ss,fff")}");
                 Logs.Trace($"完成解析文件:[{stdfid}]-{Path.GetFileName(filePath)}");
             }
-            catch (Exception e)
+            catch (Exception ex)
             {
-                Console.WriteLine(e);
+                Console.WriteLine(ex);
+                throw ex;
             }
 
             return stdfid;

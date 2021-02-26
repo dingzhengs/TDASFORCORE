@@ -14,7 +14,7 @@ namespace MessageStaticParseService
         {
             sw = new StaticWorker();
             // 写库 创建文件 写规则
-            sw.Start(true, false, false);
+            sw.Start(true, true, true);
             Logs.Trace("启动文件监听");
             return true;
         }
