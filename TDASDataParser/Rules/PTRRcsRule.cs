@@ -1367,7 +1367,7 @@ namespace TDASDataParser.Rules
 
                         if (dicRcsEcidRef[RuleKey].Count == 0)
                         {
-                            return;
+                            continue;
                         }
 
                         var dicCurrEcid = ptrList.Where(p => checkTxt.Contains(p.TESTTXT) || outputTxt.Contains(p.TESTTXT)).ToDictionary(p => p.TESTTXT, p => p.RESULT);
@@ -1375,7 +1375,7 @@ namespace TDASDataParser.Rules
 
                         if (dicCurrEcid.Count == 0)
                         {
-                            return;
+                            continue;
                         }
 
                         // 是否跳变
