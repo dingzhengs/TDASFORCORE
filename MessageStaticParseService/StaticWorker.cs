@@ -92,7 +92,7 @@ namespace MessageStaticParseService
 
                                     db.ExecuteNonQuery(
                                         @"INSERT INTO CSVPATH(STDFID,FILEPATH,LOTID,INPUTDATE)VALUES(:stdfid,:filename,:lotid,sysdate)",
-                                        new {stdfid, filename = Path.Combine(disk, csvs[0].Name), lotid});
+                                        new {stdfid, filename = Path.Combine(disk,data, csvs[0].Name), lotid});
 
                                     csvs[0].Delete();
                                 }
