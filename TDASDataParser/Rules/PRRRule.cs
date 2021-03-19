@@ -446,18 +446,18 @@ namespace TDASDataParser.Rules
                     }
                     string _mailtitle = rule.ACTION + "_" + rule.TYPE + "_" + rule.PRODUCT + "_" + mir.LOTID + "_" + mir.TESTCOD + "_" + mir.SBLOTID + "_" + mir.FLOWID + "_" + mir.NODENAM + "_" + now.ToString("yyyyMMddHHmmss");
 
-                    Global.redis.Publish("PRR", JToken.FromObject(new
-                    {
-                        ISSTOP = rule.ACTION == "Pause Production" ? "1" : "0",
-                        EQPTID = handler,
-                        GUID = rule.GUID,
-                        EQPNAME = mir.NODENAM,
-                        STDFID = prr.StdfId,
-                        DATETIME = now.ToString("yyyyMMddHHmmss"),
-                        SITENUM = prr.SITENUM,
-                        REMARK = $"{count}",
-                        MAILTITLE = _mailtitle
-                    }).ToString());
+                    //Global.redis.Publish("PRR", JToken.FromObject(new
+                    //{
+                    //    ISSTOP = rule.ACTION == "Pause Production" ? "1" : "0",
+                    //    EQPTID = handler,
+                    //    GUID = rule.GUID,
+                    //    EQPNAME = mir.NODENAM,
+                    //    STDFID = prr.StdfId,
+                    //    DATETIME = now.ToString("yyyyMMddHHmmss"),
+                    //    SITENUM = prr.SITENUM,
+                    //    REMARK = $"{count}",
+                    //    MAILTITLE = _mailtitle
+                    //}).ToString());
                     Logs.Rule($"{rule.TYPE}-{prr.StdfId}");
 
                     Task.Run(() =>
