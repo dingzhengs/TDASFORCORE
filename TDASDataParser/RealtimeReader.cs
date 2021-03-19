@@ -146,21 +146,7 @@ namespace TDASDataParser
             }
             try
             {
-                if (type == "MIR")
-                {
-                    MIR mir = entity as MIR;
-
-                    SYS_REPLACE sp = new SYS_REPLACE();
-
-                    sp.CheckMIR(mir, dmgr);
-
-                    data = mir.ReplaceData();
-
-                    ruleFactory?.Init(mir, dmgr);
-                    writeToCsv?.Init(mir, dmgr);
-
-                    UpdateLostMRR(mir);
-                }
+                
                 if (type == "SDR")
                 {
                     writeToCsv?.SDRINFO(entity as SDR);
@@ -215,7 +201,15 @@ namespace TDASDataParser
                 {
                     batch.ListLeftPushAsync(type, BitConverter.GetBytes(entity.StdfId).Concat(new byte[] { 0, 0, 0, 0, 0, 0, 0, 0 }).Concat(data).ToArray());
                 }
+                if (type == "MIR")
+                {
+                    MIR mir1 = entity as MIR;
 
+                    ruleFactory?.Init(mir1, dmgr);
+                    writeToCsv?.Init(mir1, dmgr);
+
+                    UpdateLostMRR(mir1);
+                }
                 if (type == "MRR")
                 {
                     isWatch = false;
