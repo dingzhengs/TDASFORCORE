@@ -1185,20 +1185,20 @@ namespace TDASDataParser.Rules
             }
             string _mailtitle = rule.ACTION + "_" + rule.RULETYPE + "_" + rule.PRODUCT + "_" + mir.LOTID + "_" + mir.TESTCOD + "_" + mir.SBLOTID + "_" + mir.FLOWID + "_" + mir.NODENAM + "_" + now.ToString("yyyyMMddHHmmss");
 
-            //Global.redis.Publish("RCS", JToken.FromObject(new
-            //{
-            //    ISSTOP = rule.ACTION == "Pause Production" ? "1" : "0",
-            //    GUID = rule.GUID,
-            //    EQPNAME = mir.NODENAM,
-            //    EQPTID = handler,
-            //    STDFID = ptr.StdfId,
-            //    DATETIME = now.ToString("yyyyMMddHHmmss"),
-            //    SITENUM = ptr.SITENUM,
-            //    PARTID = ptr.PARTID,
-            //    REMARK = string.IsNullOrEmpty(remark) ? "-" : remark,
-            //    MAILTITLE = _mailtitle,
-            //    PRODUCT = rule.PRODUCT
-            //}).ToString());
+            Global.redis.Publish("RCS", JToken.FromObject(new
+            {
+                ISSTOP = rule.ACTION == "Pause Production" ? "1" : "0",
+                GUID = rule.GUID,
+                EQPNAME = mir.NODENAM,
+                EQPTID = handler,
+                STDFID = ptr.StdfId,
+                DATETIME = now.ToString("yyyyMMddHHmmss"),
+                SITENUM = ptr.SITENUM,
+                PARTID = ptr.PARTID,
+                REMARK = string.IsNullOrEmpty(remark) ? "-" : remark,
+                MAILTITLE = _mailtitle,
+                PRODUCT = rule.PRODUCT
+            }).ToString());
             Logs.Rule( $"{rule.RULETYPE}-{ptr.StdfId}-{ptr.PARTID}");
 
             try
@@ -1267,19 +1267,19 @@ namespace TDASDataParser.Rules
             }
             string _mailtitle = "Pause Production_1TOUCHDOWN_" + rule.PRODUCT + "_" + mir.LOTID + "_" + mir.TESTCOD + "_" + mir.SBLOTID + "_" + mir.FLOWID + "_" + mir.NODENAM + "_" + now.ToString("yyyyMMddHHmmss");
 
-            //Global.redis.Publish("1TOUCHDOWN", JToken.FromObject(new
-            //{
-            //    ISSTOP = "1",
-            //    GUID = rule.GUID,
-            //    EQPNAME = mir.NODENAM,
-            //    EQPTID = handler,
-            //    STDFID = ptr.StdfId,
-            //    DATETIME = now.ToString("yyyyMMddHHmmss"),
-            //    SITENUM = ptr.SITENUM,
-            //    PARTID = ptr.PARTID,
-            //    REMARK = string.IsNullOrEmpty(remark) ? "-" : remark,
-            //    MAILTITLE = _mailtitle
-            //}).ToString());
+            Global.redis.Publish("1TOUCHDOWN", JToken.FromObject(new
+            {
+                ISSTOP = "1",
+                GUID = rule.GUID,
+                EQPNAME = mir.NODENAM,
+                EQPTID = handler,
+                STDFID = ptr.StdfId,
+                DATETIME = now.ToString("yyyyMMddHHmmss"),
+                SITENUM = ptr.SITENUM,
+                PARTID = ptr.PARTID,
+                REMARK = string.IsNullOrEmpty(remark) ? "-" : remark,
+                MAILTITLE = _mailtitle
+            }).ToString());
             Logs.Rule( $"{"1TOUCHDOWN"}-{ptr.StdfId}-{ptr.PARTID}");
 
             string guid = Guid.NewGuid().ToString("N");

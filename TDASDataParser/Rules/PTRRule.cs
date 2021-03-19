@@ -1590,23 +1590,23 @@ namespace TDASDataParser.Rules
                     }
                     string _mailtitle = rule.ACTION + "_" + rule.TYPE + "_" + rule.PRODUCT + "_" + mir.LOTID + "_" + mir.TESTCOD + "_" + mir.SBLOTID + "_" + mir.FLOWID + "_" + mir.NODENAM + "_" + now.ToString("yyyyMMddHHmmss");
 
-                    //Global.redis.Publish("ECIDWAFER", JToken.FromObject(new
-                    //{
-                    //    REFS = $"{string.Join(",", refwafer.values.Take(refwafer.values.Length - 3))}|{string.Join(",", refwafer.values.Skip(refwafer.values.Length - 3))}|{refwafer.partId}",
-                    //    RESULT = $"{string.Join(",", currwafer[ptr.PARTID].values.Take(currwafer[ptr.PARTID].values.Length - 3))}|{string.Join(",", currwafer[ptr.PARTID].values.Skip(currwafer[ptr.PARTID].values.Length - 3))}|{currwafer[ptr.PARTID].partId}",
-                    //    STDFID = mir.StdfId,
-                    //    EQPTID = handler,
-                    //    FACTORY = rule.FACTORY,
-                    //    PARTTYP = mir.PARTTYP,
-                    //    TESTCOD = mir.TESTCOD,
-                    //    NODENAM = mir.NODENAM,
-                    //    GUID = rule.GUID,
-                    //    LOTID = mir.LOTID,
-                    //    SBLOTID = mir.SBLOTID,
-                    //    FLOWID = flowid,
-                    //    DATETIME = now.ToString("yyyyMMddHHmmss"),
-                    //    MAILTITLE = _mailtitle
-                    //}).ToString());
+                    Global.redis.Publish("ECIDWAFER", JToken.FromObject(new
+                    {
+                        REFS = $"{string.Join(",", refwafer.values.Take(refwafer.values.Length - 3))}|{string.Join(",", refwafer.values.Skip(refwafer.values.Length - 3))}|{refwafer.partId}",
+                        RESULT = $"{string.Join(",", currwafer[ptr.PARTID].values.Take(currwafer[ptr.PARTID].values.Length - 3))}|{string.Join(",", currwafer[ptr.PARTID].values.Skip(currwafer[ptr.PARTID].values.Length - 3))}|{currwafer[ptr.PARTID].partId}",
+                        STDFID = mir.StdfId,
+                        EQPTID = handler,
+                        FACTORY = rule.FACTORY,
+                        PARTTYP = mir.PARTTYP,
+                        TESTCOD = mir.TESTCOD,
+                        NODENAM = mir.NODENAM,
+                        GUID = rule.GUID,
+                        LOTID = mir.LOTID,
+                        SBLOTID = mir.SBLOTID,
+                        FLOWID = flowid,
+                        DATETIME = now.ToString("yyyyMMddHHmmss"),
+                        MAILTITLE = _mailtitle
+                    }).ToString());
                     Logs.Rule($"{rule.TYPE}-{ptr.StdfId},{string.Join(",", waferCheckTxt)}");
 
                     Task.Run(() =>
