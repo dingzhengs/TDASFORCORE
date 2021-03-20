@@ -111,10 +111,14 @@ namespace TDASDataParser.StdfTypes
             SERLNUM = GetNotFixedString(data);
             SUPRNAM = GetNotFixedString(data);
 
-            if (SBLOTID?.Length >= 3)
-            {
-                FAMLYID = SBLOTID?.Substring(0, 3);
-            }
+            //原FAMLYID赋值给SUPRNAM，原FACILID赋值给FAMLYID
+            SUPRNAM = FAMLYID;
+            FAMLYID = FACILID;
+
+            //if (SBLOTID?.Length >= 3)
+            //{
+            //    FAMLYID = SBLOTID?.Substring(0, 3);
+            //}
 
             switch (FLOWID)
             {
