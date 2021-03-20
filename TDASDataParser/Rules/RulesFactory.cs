@@ -373,11 +373,11 @@ and UPPER(:NODENAM) NOT IN (select eqpname from sys_rules_testrun_eq_reject wher
         {
             Logs.Debug(JsonConvert.SerializeObject(new { mir.PARTTYP, mir.FAMLYID, mir.TESTCOD }));
             return new DatabaseManager().ExecuteEntities<V_RULES_RCS>(@"select guid,ruletype,team,product,custcode,test_type,columname,columvalue,insertion,passflag,notexist,omitname,TESTNUM,UP_DOWN,BYSITE,DEVICEGROUP,NVL(columtype,'不等于') columtype,action,STATUS,STATUS_NUM,CAL_TYPE from sys_rcs_rules_testrun 
-where UPPER(product)=UPPER(:PARTTYP) and UPPER(custcode)=UPPER(:FAMLYID) and UPPER(insertion)=UPPER(:TESTCOD) and isused='1'
+where UPPER(product)=UPPER(:PARTTYP) and UPPER(insertion)=UPPER(:TESTCOD) and isused='1'
 union all
 select guid,'漏项检查' ruletype,'' team,product,'' custcode,'' test_type,decode(bins_type,'HBin','HARDBIN','SBin','SOFTBIN','TESTTXT') columname,decode(bins_type,'HBin',count,'SBin',count,ecid_checktxt) columvalue,'' insertion,'' passflag,'' notexist,'' omitname,'' TESTNUM,0 UP_DOWN,'' BYSITE,DEVICEGROUP,'' columtype,action,'0' STATUS,0 STATUS_NUM,'' CAL_TYPE
 from sys_rules_testrun where type='1TOUCHDOWN' and UPPER(product)=UPPER(:PARTTYP) and isused='1' ",
-                        new { mir.PARTTYP, mir.FAMLYID, mir.TESTCOD });
+                        new { mir.PARTTYP, mir.TESTCOD });
         }
 
         #region IDisposable Support
