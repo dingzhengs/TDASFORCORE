@@ -79,7 +79,7 @@ namespace TDASDataParser.Rules
                 DatabaseManager dmgr_new = new DatabaseManager();
                 DataTable dt_rcs = dmgr_new.ExecuteDataTable("select * from SYS_RCS_RULES_HEAD where stdfid='" + mir.StdfId + "'");
                 DataTable dt_rcs_rule = dmgr_new.ExecuteDataTable(@"select * from sys_rcs_rules_testrun t
-where upper(t.product) = upper('" + mir.PARTTYP + "') and upper(t.custcode) = upper('" + mir.FAMLYID + "') and upper(t.insertion) = upper('" + mir.TESTCOD + "')");
+where upper(t.product) = upper('" + mir.PARTTYP + "') and upper(t.insertion) = upper('" + mir.TESTCOD + "')");
                 if (dt_rcs.Rows.Count < 1 && dt_rcs_rule.Rows.Count > 0)
                 {
                     string filename = dmgr_new.ExecuteScalar("select filename from stdffile where stdfid='" + mir.StdfId + "'").ToString();
